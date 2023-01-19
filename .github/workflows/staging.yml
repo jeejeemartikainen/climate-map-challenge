@@ -1,0 +1,36 @@
+name: Deploy to staging
+
+on:
+  push:
+    branches: 
+      - staging
+  pull_request:
+    branches: 
+      - staging
+
+jobs:
+  deploy-to-staging:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: src
+    steps:
+      - name: checkout
+        uses: actions/checkout@v2
+      - name: setup node
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+      - name: npm install
+        run: npm install
+      - name: build
+        run: npm run build
+      - name: Install SSH Key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+      - name: Adding  known hosts
+        run: ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+      - name: Deploy with rsync
+        run: rsync -chavzP -e "ssh -p 6022" ./build/ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/zdvsd5qm/www/climate-challenge
+      
