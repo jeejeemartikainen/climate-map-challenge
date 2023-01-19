@@ -29,8 +29,8 @@ jobs:
         uses: shimataro/ssh-key-action@v2
         with:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-      - name: Adding  known hosts
-        run: ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+          name: github-action
+          known_hosts: ${{ secrets.KNOWN_HOSTS }}
       - name: Deploy with rsync
         run: rsync -chavzP -e "ssh -p 6022" ./build/ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/zdvsd5qm/www/climate-challenge
       
