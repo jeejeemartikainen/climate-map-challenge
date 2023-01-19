@@ -30,7 +30,9 @@ jobs:
         with:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           name: github-action
-          known_hosts: ${{ secrets.KNOWN_HOSTS }}
+          known_hosts: 'generate-later'
+      - name: Adding Known Hosts fingerprint
+        run: ssh-keyscan -p 6022 -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
       - name: Deploy with rsync
         run: rsync -chavzP -e "ssh -p 6022" ./build/ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/zdvsd5qm/www/climate-challenge
       
